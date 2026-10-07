@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07101c">
+<title>7 FAI</title>
+<style>
+:root{--bg:#07101c;--panel:#0d1726;--panel2:#111e31;--line:rgba(255,255,255,.09);--muted:#9fb0c8;--text:#f6f8fc;--shadow:0 24px 70px rgba(0,0,0,.28);--radius:26px;--ease:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100%;color:var(--text);background:radial-gradient(circle at 50% -15%,rgba(55,114,255,.17),transparent 34rem),linear-gradient(180deg,#06101d 0,#091523 45%,#07111d 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+button,input,select{font:inherit}
+button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(100,165,255,.45);outline-offset:2px}
+.app{min-height:100vh;position:relative;overflow:hidden}
+.noise{position:fixed;inset:0;opacity:.035;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E")}
+.orb{position:fixed;width:26rem;height:26rem;border-radius:50%;filter:blur(80px);opacity:.18;pointer-events:none}
+.orb.a{left:-13rem;top:14rem;background:#2e7bff}.orb.b{right:-15rem;bottom:8rem;background:#8a43ff}
+.shell{width:min(980px,94vw);margin:0 auto;min-height:100vh;padding:20px 0 38px;position:relative;z-index:2}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.credit{font-size:12px;color:#8fa3be;letter-spacing:.15px}
+.top-actions{display:flex;gap:8px}
+.icon-btn,.ghost-btn{border:1px solid var(--line);background:rgba(255,255,255,.035);min-height:42px;padding:0 13px;border-radius:14px;cursor:pointer;transition:.2s var(--ease)}
+.icon-btn:hover,.ghost-btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.065)}
+.hero{text-align:center;padding:24px 10px 26px}
+.logo{font-size:clamp(52px,10vw,92px);line-height:.9;font-weight:950;letter-spacing:-5px;margin:0;background:linear-gradient(100deg,#fff,#a8d3ff 54%,#8e9fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{margin:13px auto 0;color:#a4b5cb;font-size:14px;max-width:600px}
+.hero-pill{display:inline-flex;margin-top:14px;padding:8px 13px;border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:999px;color:#c1cfe1;font-size:12px}
+.screen{display:none;animation:enter .46s var(--ease)}
+.screen.active{display:block}
+@keyframes enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.lesson-list{display:flex;flex-direction:column;gap:13px}
+.lesson{width:100%;border:0;border-radius:23px;min-height:78px;padding:16px 19px;display:flex;align-items:center;justify-content:space-between;text-align:left;cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 28%,#101b2b),#0e1828 78%);box-shadow:0 15px 35px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.09);transition:transform .25s var(--ease),box-shadow .25s var(--ease),filter .25s var(--ease)}
+.lesson:before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.16) 48%,transparent 72%);transform:translateX(-120%);transition:transform .65s var(--ease)}
+.lesson:hover{transform:translateY(-4px) scale(1.008);box-shadow:0 20px 46px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.12);filter:saturate(1.08)}
+.lesson:hover:before{transform:translateX(120%)}
+.lesson:active{transform:scale(.985)}
+.lesson-main{display:flex;align-items:center;min-width:0;gap:13px}.lesson-dot{width:11px;height:44px;border-radius:99px;background:var(--c);box-shadow:0 0 20px color-mix(in srgb,var(--c) 48%,transparent)}
+.lesson-name{font-size:clamp(19px,3vw,25px);font-weight:800;line-height:1.1}.lesson-meta{font-size:11px;color:#98aac1;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lesson-arrow{font-size:28px;color:#c7d7ea;transition:transform .25s var(--ease)}.lesson:hover .lesson-arrow{transform:translateX(4px)}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px}.wide-card{grid-column:1/-1}
+.card{background:linear-gradient(180deg,rgba(17,30,49,.84),rgba(10,20,34,.92));border:1px solid var(--line);border-radius:23px;padding:18px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.card-title{font-size:14px;font-weight:800}.muted{color:var(--muted)}.tiny{font-size:11px}.small{font-size:12px}.section-label{display:block;margin-bottom:8px;font-size:11px;color:#90a2ba}
+.secret-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.secret-row input{width:100%;background:#07111e;border:1px solid var(--line);border-radius:13px;padding:11px 12px;color:#dbe7f5;font-size:11px;min-width:0}
+.action{border:0;border-radius:14px;min-height:44px;padding:0 15px;cursor:pointer;font-weight:750;background:#e9f1ff;color:#12213a;transition:.2s var(--ease)}
+.action:hover{transform:translateY(-2px)}.action:active{transform:scale(.98)}.action.primary{background:linear-gradient(135deg,#5d9dff,#7f7bff);color:#fff;box-shadow:0 12px 30px rgba(74,124,255,.25)}
+.footer-nav{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:16px}
+.back-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.back{background:transparent;border:0;color:#a9bad0;cursor:pointer;padding:5px 0}.screen-title{font-size:30px;font-weight:900;letter-spacing:-1px}.chip{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:12px;color:#bcd0e8}
+.setup-card{padding:23px}.field{margin-top:18px}.field:first-child{margin-top:0}.field label{display:block;font-size:12px;color:#9db0c9;margin-bottom:8px;font-weight:700}.field input,.field select{width:100%;height:52px;background:#081322;border:1px solid var(--line);border-radius:15px;color:#fff;padding:0 14px}
+.range-wrap{display:grid;grid-template-columns:1fr 70px;gap:12px;align-items:center}.range-wrap input{padding:0}.range-value{text-align:center;font-size:18px;font-weight:900}
+.range{accent-color:#679fff}.setup-actions{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:22px}
+.loading{min-height:62vh;display:grid;place-items:center;text-align:center}.loading-box{width:min(590px,100%);padding:32px}.loader{width:74px;height:74px;margin:0 auto 21px;border-radius:50%;background:conic-gradient(from 0deg,#6ca6ff,#7e80ff,#57e0c7,#6ca6ff);mask:radial-gradient(circle 27px,transparent 97%,#000 100%);animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-size:27px;font-weight:900}.loading-text{color:#9eb2ca;margin-top:8px;line-height:1.6}.progress{margin-top:22px;height:9px;background:#0a1320;border-radius:99px;overflow:hidden;border:1px solid var(--line)}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#61a5ff,#8b83ff);border-radius:inherit;transition:width .35s var(--ease)}
+.quiz-shell{width:min(900px,100%);margin:auto}.quiz-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}.quiz-progress{height:8px;background:#0a1421;border-radius:99px;overflow:hidden;border:1px solid var(--line)}.quiz-progress i{display:block;height:100%;background:linear-gradient(90deg,#5aa0ff,#8b83ff);width:0;transition:width .3s var(--ease)}
+.student-tag{font-weight:900;font-size:18px}.counter{color:#9db0c6;font-size:12px}.quiz-card{margin-top:13px;padding:clamp(20px,4vw,33px);background:linear-gradient(180deg,#111d30,#0b1625);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}.question-topic{font-size:12px;color:#7faeff;font-weight:800;text-transform:uppercase;letter-spacing:.7px}.question{font-size:clamp(23px,4.6vw,39px);font-weight:850;line-height:1.24;margin:12px 0 23px;letter-spacing:-.65px}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.option{min-height:91px;border:1px solid rgba(255,255,255,.09);background:#0c1828;border-radius:19px;padding:13px 15px;display:flex;align-items:center;gap:13px;text-align:left;cursor:pointer;transition:.2s var(--ease)}.option:hover{transform:translateY(-2px);background:#102039;border-color:rgba(116,164,255,.35)}.option:disabled{cursor:default}.letter{width:40px;height:40px;display:grid;place-items:center;flex:0 0 40px;background:#14243a;border-radius:13px;font-weight:900}.option.correct{background:rgba(38,176,125,.14);border-color:rgba(65,214,161,.46)}.option.wrong{background:rgba(244,80,94,.13);border-color:rgba(255,97,112,.45)}.quiz-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:17px}.quiz-hint{font-size:12px;color:#94a9c2}.next{min-width:180px}.next:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.hero-score{grid-column:1/-1;display:grid;grid-template-columns:180px 1fr;align-items:center;gap:20px}.score-ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#64a4ff var(--p),#122138 0);position:relative}.score-ring:after{content:"";position:absolute;inset:13px;border-radius:50%;background:#0b1625;border:1px solid var(--line)}.score-inner{position:relative;z-index:1;text-align:center}.score-num{font-size:39px;font-weight:950}.score-label{font-size:11px;color:#8fa3bd}.metric{padding:14px;background:#0a1422;border:1px solid var(--line);border-radius:17px;margin-top:9px}.metric:first-child{margin-top:0}.metric-head{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:800}.bar{height:7px;background:#101e30;border-radius:99px;overflow:hidden;margin-top:9px}.bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#5ca2ff,#8a81ff)}.student-list{display:flex;flex-direction:column;gap:8px}.student-row{display:grid;grid-template-columns:115px 1fr 65px 110px;gap:10px;align-items:center;border:1px solid var(--line);background:#0a1422;border-radius:15px;padding:11px 12px;font-size:12px}.student-row .score{font-weight:900;text-align:right}.level{color:#bbd1ec;font-weight:800}.next-box{background:linear-gradient(135deg,rgba(83,146,255,.13),rgba(126,104,255,.12));border-color:rgba(113,156,255,.23)}
+.modal{position:fixed;inset:0;background:rgba(2,8,15,.74);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:15px;z-index:30}.modal.open{display:flex}.modal-card{width:min(720px,100%);max-height:min(92vh,900px);overflow:auto;border:1px solid var(--line);border-radius:27px;background:#0b1625;box-shadow:0 30px 90px rgba(0,0,0,.45);padding:22px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.modal-title{font-size:23px;font-weight:900}.close{width:40px;height:40px;border-radius:13px;border:1px solid var(--line);background:#101d30;cursor:pointer}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.modal-grid .wide{grid-column:1/-1}.modal-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.status{font-size:11px;color:#90a5bf;margin-top:6px}.research-hidden{display:none!important}.research-result{margin-top:14px}.research-summary{white-space:pre-wrap;line-height:1.65;color:#d4dfec;font-size:13px;max-height:270px;overflow:auto}.source-item{padding:11px;border:1px solid var(--line);border-radius:13px;background:#0a1422;margin-top:8px}.source-item strong{display:block;font-size:12px}.source-item a{display:block;margin-top:4px;font-size:10px;color:#80adff;overflow-wrap:anywhere}.source-item span{display:block;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:50;background:#eef4ff;color:#10213b;border-radius:15px;padding:11px 15px;box-shadow:0 18px 50px rgba(0,0,0,.3);font-size:12px;font-weight:750;transition:.25s var(--ease);max-width:min(92vw,580px);text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+.empty{padding:22px;text-align:center;color:#90a3bb;font-size:12px;border:1px dashed var(--line);border-radius:15px}
+body.board-mode .shell{width:min(1180px,94vw);padding-top:22px}.board-mode .hero{padding:10px 10px 19px}.board-mode .logo{font-size:66px}.board-mode .lesson{min-height:82px}.board-mode .lesson-list{gap:11px}.board-mode .lesson-meta{font-size:12px}.board-mode .lesson-name{font-size:24px}.board-mode .quiz-card{padding:26px 31px}.board-mode .question{font-size:35px}.board-mode .option{min-height:82px;font-size:16px}
+@media(max-width:700px){.shell{width:min(94vw,620px);padding-top:14px}.home-grid,.analysis-grid,.modal-grid{grid-template-columns:1fr}.hero{padding:18px 8px 22px}.logo{letter-spacing:-3px}.lesson{min-height:73px}.lesson-meta{max-width:70vw}.options{grid-template-columns:1fr}.option{min-height:72px}.quiz-bottom{align-items:stretch;flex-direction:column}.next{width:100%}.hero-score{grid-template-columns:1fr;text-align:center}.score-ring{margin:auto}.student-row{grid-template-columns:85px 1fr 65px}.student-row .level{grid-column:2/-1}.modal-card{padding:17px}.setup-actions{grid-template-columns:1fr}.topbar{align-items:flex-start}.credit{max-width:65%}}
+@media(min-width:701px) and (max-width:1050px){.shell{width:min(88vw,900px)}}
+@media(orientation:landscape) and (max-height:700px){.hero{padding:8px}.logo{font-size:54px}.lesson-list{gap:8px}.lesson{min-height:62px}.lesson-meta{display:none}.shell{padding-top:10px}}
+
+/* 7FAI student profile and timing layer */
+.roster-card{margin-top:13px}
+.roster-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.roster-item{display:flex;align-items:center;gap:8px;border:1px solid #2a2a33;background:#111116;border-radius:12px;padding:9px 10px;cursor:pointer;transition:.18s ease}
+.roster-item:hover{border-color:#575762;transform:translateY(-1px)}
+.roster-item.absent{opacity:.42}
+.roster-item input{width:18px;height:18px;accent-color:#fff}
+.roster-num{font-size:10px;color:#8d8d98;min-width:21px}
+.roster-name{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.roster-count{font-size:11px;font-weight:900;padding:7px 9px;border-radius:10px;background:#1a1a21;color:#fff}
+.profile-note{margin-top:7px}
+.student-tag-wrap{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.student-profile-chip{font-size:11px;color:#a6a6b2;background:#17171e;border:1px solid #2a2a33;border-radius:10px;padding:6px 9px}
+.timer-box{display:flex;align-items:center;gap:8px;min-width:150px;justify-content:flex-end}
+.timer-value{font-variant-numeric:tabular-nums;font-size:14px;font-weight:900;min-width:68px;text-align:right}
+.timer-baseline{font-size:10px;color:#8d8d98}
+.timer-track{height:5px;background:#24242c;border-radius:999px;overflow:hidden;margin:9px 0 0}
+.timer-track i{display:block;height:100%;width:0%;background:#fff;border-radius:999px;transition:width .1s linear}
+.analysis-timing{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.timing-card{background:#15151b;border:1px solid #2a2a33;border-radius:14px;padding:11px}
+.timing-card b{display:block;font-size:18px}
+.timing-card span{display:block;color:#898994;font-size:10px;margin-top:3px}
+.student-row .timing-inline{display:flex;gap:8px;flex-wrap:wrap;grid-column:2/-1}
+.timing-pill{padding:5px 7px;border-radius:8px;background:#1a1a21;color:#bdbdc8;font-size:10px}
+@media(max-width:700px){.roster-grid{grid-template-columns:1fr 1fr}.analysis-timing{grid-template-columns:1fr 1fr}.timer-box{min-width:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="noise"></div><div class="orb a"></div><div class="orb b"></div>
+<div class="shell">
+<div class="topbar">
+<div class="credit">7/F Öğrencisi Tarafından Geliştirilmiştir</div>
+<div class="top-actions"><button class="icon-btn" id="historyBtn">Geçmiş</button><button class="icon-btn" id="fullscreenBtn">Tam Ekran</button></div>
+</div>
+<header class="hero">
+<h1 class="logo">7 FAI</h1>
+<div class="hero-sub">Yedi ders için yapay zekâ destekli sınıf seviye ve gelişim laboratuvarı</div>
+<div class="hero-pill">Her testte farklı sorular ve konuya özel seçenekler</div>
+</header>
+
+<section id="homeScreen" class="screen active" aria-hidden="false">
+<div id="lessonList" class="lesson-list"></div>
+<div class="home-grid">
+<div class="card">
+<div class="card-title">Web Araştırması</div>
+<div class="muted small" style="margin-top:6px">Bir konu yazın. Yapay zekâ güncel web kaynaklarını araştırıp ardından o konuya uygun özgün bir sınıf testi oluşturabilir.</div>
+<button class="action" id="webResearchBtn" style="width:100%;margin-top:13px">Webde Konu Araştır</button>
+</div>
+<div class="card">
+<div class="card-title">Sınıf Geçmişi</div>
+<div class="muted small" style="margin-top:6px">Önceki testlerin sınıf puanlarını ve gelişim önerilerini bu cihazda saklayın.</div>
+<button class="ghost-btn" id="historyHomeBtn" style="width:100%;margin-top:13px">Geçmişi Aç</button>
+</div>
+<div class="card wide-card">
+<div class="card-title">Kurulum için Kopyalanabilir API Anahtarları</div>
+<div class="muted tiny" style="margin-top:5px">Ana sayfada hazır bulunur. Kopyalayıp API Ayarları bölümüne yapıştırabilirsiniz.</div>
+<label class="section-label" style="margin-top:12px">Ana API</label>
+<div class="secret-row"><input id="seedPrimary" readonly value="gsk_kZRA3yuYgnBzKQ2j8snWGdyb3FY1BQKkmyMgQw3zKzfXxUmr09f"><button class="action" data-seed-copy="seedPrimary">Kopyala</button></div>
+<label class="section-label" style="margin-top:12px">Yedek API</label>
+<div class="secret-row"><input id="seedBackup" readonly value="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"><button class="action" data-seed-copy="seedBackup">Kopyala</button></div>
+<div class="footer-nav"><button class="action primary" id="apiSettingsBtn">API Ayarları</button><button class="ghost-btn" id="copyAllApiBtn">İkisini Birden Kopyala</button></div>
+</div>
+</div>
+</section>
+
+<section id="setupScreen" class="screen" aria-hidden="true">
+<div class="back-row"><button class="back" id="backHomeBtn">← Derslere Dön</button><span class="chip" id="selectedCourseChip">Ders</span></div>
+<div class="card setup-card">
+<div class="screen-title">Sınıf testini hazırla</div>
+<div class="muted small" style="margin-top:7px">Sorular cihazın türüne göre değil, seçilen ders ve 7. sınıf seviyesine göre hazırlanır. Telefon, bilgisayar ve akıllı tahta yalnızca görünümü değiştirir.</div>
+<div class="field"><label for="studentCount">Sınıfta şu an bulunan öğrenci sayısı</label><div class="range-wrap"><input class="range" id="studentCount" type="range" min="1" max="50" value="30"><div class="range-value" id="studentCountValue">30</div></div></div>
+<div class="field"><label for="difficulty">Test yaklaşımı</label><select id="difficulty"><option value="adaptive">Sınıf seviyesine göre uyarlanmış</option><option value="easy">Daha temel</option><option value="medium">Orta</option><option value="hard">Daha zor</option></select></div>
+<div class="field"><label for="focusInput">Özel konu veya odak, isteğe bağlı</label><input id="focusInput" placeholder="Örneğin: Rasyonel sayılar"></div>
+<div class="card roster-card">
+<div class="roster-head"><div><div class="card-title">Mevcut öğrenciler</div><div class="muted tiny profile-note">Öğrenciler kalıcı profillerle saklanır. Bu derste olmayan öğrencinin işaretini kaldırın.</div></div><div class="roster-count" id="presentCount">30 / 30</div></div>
+<div class="roster-grid" id="rosterGrid"></div>
+</div>
+<div class="setup-actions"><button class="action primary" id="generateTestBtn">AI ile Testi Oluştur</button><button class="ghost-btn" id="setupFullscreenBtn">Tam Ekran</button></div>
+</div>
+</section>
+
+<section id="loadingScreen" class="screen" aria-hidden="true"><div class="loading"><div class="card loading-box"><div class="loader"></div><div class="loading-title" id="loadingTitle">Test hazırlanıyor</div><div class="loading-text" id="loadingText">Yapay zekâ soruları hazırlıyor.</div><div class="progress"><i id="loadingProgress"></i></div></div></div></section>
+
+<section id="questionScreen" class="screen" aria-hidden="true">
+<div class="quiz-shell">
+<div class="quiz-top"><div><div class="student-tag-wrap"><div class="student-tag" id="currentStudentLabel">Öğrenci 1</div><div class="student-profile-chip" id="currentStudentProfile">Profil 01</div></div><div class="counter" id="questionCounter">1 / 30</div></div><div class="timer-box"><div><div class="timer-value" id="questionTimer">0.0 sn</div><div class="timer-baseline">Ortalama hedef 10 sn</div></div><button class="ghost-btn" id="fullscreenQuizBtn">Tam Ekran</button></div></div>
+<div class="quiz-progress"><i id="testProgress"></i></div><div class="timer-track"><i id="questionTimerBar"></i></div>
+<div class="quiz-card">
+<div class="question-topic" id="questionTopic">Konu</div>
+<div class="question" id="questionText">Soru hazırlanıyor.</div>
+<div class="options" id="optionGrid"></div>
+<div class="quiz-bottom"><div class="quiz-hint" id="questionHint">Cevabını seç ve yerine geç.</div><button class="action primary next" id="nextQuestionBtn" disabled>Cevabı Kaydet</button></div>
+</div></div>
+</section>
+
+<section id="analysisLoadingScreen" class="screen" aria-hidden="true"><div class="loading"><div class="card loading-box"><div class="loader"></div><div class="loading-title">Sınıf analiz ediliyor</div><div class="loading-text">Cevaplar tek toplu değerlendirmede inceleniyor. Öğrenciler için sade ve anlaşılır sonuçlar hazırlanıyor.</div><div class="progress"><i id="analysisProgress"></i></div></div></div></section>
+
+<section id="resultScreen" class="screen" aria-hidden="true">
+<div class="back-row"><button class="back" id="homeAfterResultBtn">← Ana Sayfa</button><div style="display:flex;gap:8px;align-items:center"><button class="ghost-btn" id="resultFullscreenBtn">Tam Ekran</button><span class="chip" id="resultCourseChip">Ders</span></div></div>
+<div class="analysis-grid">
+<div class="card hero-score"><div class="score-ring" id="scoreRing" style="--p:0%"><div class="score-inner"><div class="score-num" id="classScore">0%</div><div class="score-label">Sınıf Başarısı</div></div></div><div><div class="screen-title">Sınıf analizi</div><div class="muted small" id="classSummary" style="margin-top:9px;line-height:1.65"></div></div></div>
+<div class="card"><div class="card-title">Öne çıkan sonuçlar</div><div id="highlightList" style="margin-top:10px"></div></div>
+<div class="card"><div class="card-title">Konu durumu</div><div id="topicMetrics" style="margin-top:10px"></div></div>
+<div class="card wide-card"><div class="card-title">Öğrenci değerlendirmeleri <span class="muted tiny" id="studentResultMeta"></span></div><div class="student-list" id="studentTable" style="margin-top:10px"></div></div>
+<div class="card next-box wide-card"><div class="card-title">Bir sonraki test</div><div id="nextTestAdvice" class="small" style="margin-top:8px;line-height:1.7"></div><button class="action primary" id="nextTestBtn" style="margin-top:13px">Bu Analize Göre Yeni Test Oluştur</button></div>
+</div>
+</section>
+
+<section id="historyScreen" class="screen" aria-hidden="true">
+<div class="back-row"><button class="back" id="backHomeHistoryBtn">← Ana Sayfa</button><span class="screen-title">Test Geçmişi</span></div>
+<div class="card"><div id="historyList"></div><button class="ghost-btn" id="clearHistoryBtn" style="width:100%;margin-top:12px">Bu Cihazdaki Geçmişi Temizle</button></div>
+</section>
+</div></div>
+
+<div class="modal" id="apiModal" aria-hidden="true"><div class="modal-card">
+<div class="modal-head"><div><div class="modal-title">API Ayarları</div><div class="muted tiny" style="margin-top:4px">Ana bağlantı çalışmazsa yedek bağlantı otomatik denenir.</div></div><button class="close" id="closeApiBtn">×</button></div>
+<div class="modal-grid">
+<div class="wide"><div class="section-label">Ana API Anahtarı</div><div class="secret-row"><input id="primaryApi" spellcheck="false"><button class="action" data-copy-target="primaryApi">Kopyala</button></div><div class="status" id="primaryStatus"></div></div>
+<div class="wide"><div class="section-label">Yedek API Anahtarı</div><div class="secret-row"><input id="backupApi" spellcheck="false"><button class="action" data-copy-target="backupApi">Kopyala</button></div><div class="status" id="backupStatus"></div></div>
+<div><div class="section-label">Ana model</div><select id="modelSelect"><option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option></select></div>
+<div><div class="section-label">Yedek model</div><select id="backupModelSelect"><option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option></select></div>
+</div>
+<div class="modal-actions"><button class="action" id="testPrimaryBtn">Ana APIyi Test Et</button><button class="action" id="testBackupBtn">Yedek APIyi Test Et</button><button class="ghost-btn" id="demoBtn">Yerel Demo</button><button class="action primary" id="saveApiBtn">Kaydet</button></div>
+</div></div>
+
+<div class="modal" id="researchModal" aria-hidden="true"><div class="modal-card">
+<div class="modal-head"><div><div class="modal-title">Web Araştırması</div><div class="muted tiny" style="margin-top:4px">Önce konuyu araştırır, sonra araştırılan bilgilerden özgün sorular üretir.</div></div><button class="close" id="closeResearchBtn">×</button></div>
+<div id="researchForm">
+<div class="modal-grid">
+<div><div class="section-label">Ders</div><select id="researchCourse"></select></div>
+<div><div class="section-label">Mevcut öğrenci sayısı</div><div class="range-wrap"><input class="range" id="researchStudents" type="range" min="1" max="50" value="30"><div class="range-value" id="researchStudentsValue">30</div></div></div>
+<div class="wide"><div class="section-label">Araştırılacak konu</div><input id="researchTopic" placeholder="Örneğin: Rasyonel sayılar 7. sınıf"></div>
+</div>
+<div class="modal-actions"><button class="action primary" id="startResearchBtn">Okey, Araştırmayı Başlat</button><button class="ghost-btn" id="cancelResearchBtn">Vazgeç</button></div>
+</div>
+<div id="researchBusy" class="research-hidden">
+<div class="card" style="margin-top:15px"><div class="loading" style="min-height:300px"><div><div class="loader"></div><div class="loading-title" id="researchBusyTitle">Araştırılıyor</div><div class="loading-text" id="researchBusyText">Web kaynakları aranıyor.</div><div class="progress" style="width:min(520px,88vw)"><i id="researchProgress"></i></div></div></div></div>
+</div>
+<div id="researchResult" class="research-result research-hidden">
+<div class="chip" id="researchResultChip">Araştırma tamamlandı</div><div class="muted tiny" id="researchResultMeta" style="margin-top:7px"></div>
+<div class="card" style="margin-top:11px"><div class="card-title">Araştırma özeti</div><div class="research-summary" id="researchSummaryText" style="margin-top:8px"></div></div>
+<div class="card" style="margin-top:11px"><div class="card-title">Kullanılan kaynaklar</div><div id="researchSources" style="margin-top:8px"></div></div>
+<div class="modal-actions"><button class="action primary" id="researchCreateTestBtn">Bu Konudan Test Oluştur</button><button class="ghost-btn" id="researchNewBtn">Yeni Araştırma</button></div>
+</div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+const APP={
+ name:'7 FAI',
+ storage:'7fai_state_v1',
+ modelDefault:'openai/gpt-oss-120b',
+ maxStudents:50,
+ courses:{
+  turkce:{name:'Türkçe',color:'#2b7cff',icon:'🔵',persona:'Türkçe öğretmeni gibi açık, yaşa uygun ve doğal Türkçe kullan. Paragraf, anlam, dil bilgisi ve sözcük konularında ölçme yap.'},
+  matematik:{name:'Matematik',color:'#f4bf2f',icon:'🟡',persona:'Matematik öğretmeni gibi net düşün. İşlem, problem, oran, cebir ve geometri düzeyini ölç. Soruların tek doğru cevabı olsun.'},
+  sosyal:{name:'Sosyal Bilgiler',color:'#f28b38',icon:'🟠',persona:'Sosyal bilgiler öğretmeni gibi tarih, coğrafya, vatandaşlık ve kültür bağlantıları kur. Bilgiyi ezberden çok anlamaya dönük ölç.'},
+  ingilizce:{name:'İngilizce',color:'#ef4d56',icon:'🔴',persona:'İngilizce öğretmeni gibi yaşa uygun kelime, grammar ve kısa reading soruları üret. Soru metinleri öğrencinin düzeyine uygun olsun.'},
+  din:{name:'Din Kültürü',color:'#8b5a35',icon:'🟤',persona:'Din kültürü öğretmeni gibi müfredat odaklı, saygılı ve dengeli sorular üret. Kavramları ve günlük hayata yansımalarını ölç.'},
+  fen:{name:'Fen Bilimleri',color:'#2bb673',icon:'🟢',persona:'Fen bilimleri öğretmeni gibi fizik, kimya, biyoloji ve dünya bilimi kazanımlarını yaşa uygun sorularla ölç.'},
+  teknoloji:{name:'Teknoloji ve Tasarım',color:'#8a5cf6',icon:'🟣',persona:'Teknoloji ve tasarım öğretmeni gibi tasarım süreci, problem çözme, güvenli teknoloji kullanımı ve yenilikçi düşünme becerilerini ölç.'}
+ }
+};
+const STUDENT_ROSTER = [
+  'İrem','İlknur','Betül','Zeynep Ebrar','Şelek','Haris','Vidad','Fatma','Ahmet','Yusuf','İbrahim',
+  'Elif Rana','Sena Kurnaz','Elif Sena','Medine Deniz','Yekbun','Zeynep Nur','Muhammed Ali','Ali Mirza','Muhammed Mustafa','Mustafa Gençoğlu','Muhammed Nur',
+  'Hüsna','Kevser','Kadir','Erbil','Nehir','Elif İkra','Ekrem','Ali Mustafa'
+];
+const el=id=>document.getElementById(id);
+let state=loadState();
+let current={course:null,students:30,difficulty:'adaptive',focus:'',questions:[],answers:[],index:0,testId:null,analysis:null,usedFallback:false,presentNumbers:STUDENT_ROSTER.map((_,i)=>i+1),questionStartedAt:0,questionStartWall:0,questionTimerId:null,questionEvents:[],research:{topic:'',summary:'',sources:[]}};
+function defaultState(){return {primary:'',backup:'',model:APP.modelDefault,backupModel:'openai/gpt-oss-120b',demo:false,history:[],profiles:STUDENT_ROSTER.map((name,i)=>({id:'7F-'+String(i+1).padStart(3,'0'),name,tests:[]}))};}
+function loadState(){try{return Object.assign(defaultState(),JSON.parse(localStorage.getItem(APP.storage)||'{}'));}catch{return defaultState();}}
+function saveState(){localStorage.setItem(APP.storage,JSON.stringify(state));}
+function ensureProfiles(){
+  if(!Array.isArray(state.profiles)||state.profiles.length!==STUDENT_ROSTER.length){
+    state.profiles=STUDENT_ROSTER.map((name,i)=>({id:'7F-'+String(i+1).padStart(3,'0'),name,tests:[]}));
+    saveState();
+  }else{
+    state.profiles.forEach((p,i)=>{p.id=p.id||('7F-'+String(i+1).padStart(3,'0'));p.name=STUDENT_ROSTER[i];p.tests=Array.isArray(p.tests)?p.tests:[]});
+  }
+}
+ensureProfiles();
+function profileForNumber(n){return state.profiles[Number(n)-1]||{id:'7F-'+String(n).padStart(3,'0'),name:'Öğrenci '+n,tests:[]}}
+function selectedPresentNumbers(){
+  const boxes=[...document.querySelectorAll('[data-student-present]')];
+  const values=boxes.filter(x=>x.checked).map(x=>Number(x.dataset.studentPresent)).filter(n=>Number.isInteger(n)&&n>=1&&n<=STUDENT_ROSTER.length);
+  return values.length?values:current.presentNumbers?.length?current.presentNumbers:STUDENT_ROSTER.map((_,i)=>i+1);
+}
+function renderRoster(){
+  const box=el('rosterGrid');if(!box)return;
+  ensureProfiles();
+  const present=new Set(current.presentNumbers?.length?current.presentNumbers:STUDENT_ROSTER.map((_,i)=>i+1));
+  box.innerHTML=STUDENT_ROSTER.map((name,i)=>{const n=i+1;return `<label class="roster-item ${present.has(n)?'':'absent'}"><input type="checkbox" data-student-present="${n}" ${present.has(n)?'checked':''}><span class="roster-num">${String(n).padStart(2,'0')}</span><span class="roster-name">${esc(name)}</span></label>`}).join('');
+  box.querySelectorAll('[data-student-present]').forEach(c=>c.addEventListener('change',()=>{c.closest('.roster-item').classList.toggle('absent',!c.checked);syncAttendance();playUiTone('click')}));
+  syncAttendance();
+}
+function syncAttendance(){
+  const present=selectedPresentNumbers();current.presentNumbers=present;current.students=present.length;
+  if(el('studentCount')){el('studentCount').value=present.length;el('studentCountValue').textContent=String(present.length)}
+  if(el('presentCount'))el('presentCount').textContent=`${present.length} / ${STUDENT_ROSTER.length}`;
+}
+function startQuestionTimer(){
+  stopQuestionTimer();
+  current.questionStartedAt=performance.now();current.questionStartWall=Date.now();current.questionEvents=[{type:'question_opened',at:0}];
+  const tick=()=>{const sec=(performance.now()-current.questionStartedAt)/1000;if(el('questionTimer'))el('questionTimer').textContent=sec.toFixed(1)+' sn';if(el('questionTimerBar'))el('questionTimerBar').style.width=Math.min(100,sec/10*100)+'%'};
+  tick();current.questionTimerId=setInterval(tick,100);
+}
+function stopQuestionTimer(){if(current.questionTimerId){clearInterval(current.questionTimerId);current.questionTimerId=null}}
+function elapsedSeconds(){return Math.max(0,(performance.now()-current.questionStartedAt)/1000)}
+function average(arr){const a=arr.filter(Number.isFinite);return a.length?a.reduce((x,y)=>x+y,0)/a.length:0}
+function timingSummary(answers){
+  const list=answers.filter(Boolean).map(a=>Number(a.elapsedSec)).filter(Number.isFinite);
+  return {average:average(list),fastest:list.length?Math.min(...list):0,slowest:list.length?Math.max(...list):0,within10:list.filter(x=>x<=10).length,over10:list.filter(x=>x>10).length};
+}
+function formatSec(n){return Number(n||0).toFixed(1)+' sn'}
+function findStudentName(n){return profileForNumber(n).name}
+function studentDataForAnalysis(answers){return answers.filter(Boolean).map(a=>({studentNumber:a.studentNumber,studentId:a.studentId,studentName:a.studentName,selected:a.selected,correct:a.correct,isCorrect:a.isCorrect,elapsedSec:Number(a.elapsedSec.toFixed(2)),question:a.question,topic:a.topic,events:a.events||[]}))}
+function priorProfileSummary(numbers,course){return numbers.map(n=>{const p=profileForNumber(n);const tests=(p.tests||[]).filter(t=>t.course===course).slice(-8);const scores=tests.map(t=>Number(t.score)).filter(Number.isFinite);const times=tests.map(t=>Number(t.elapsedSec)).filter(Number.isFinite);return {studentNumber:n,studentName:p.name,previousTests:tests.length,previousAverageScore:scores.length?Math.round(average(scores)):null,previousAverageTime:times.length?Number(average(times).toFixed(1)):null,lastResult:tests.length?{score:tests[tests.length-1].score,elapsedSec:tests[tests.length-1].elapsedSec,isCorrect:tests[tests.length-1].isCorrect}:null}})}
+function targetDifficultyForStudent(n,course){const p=profileForNumber(n);const tests=(p.tests||[]).filter(t=>t.course===course);if(!tests.length)return 'medium';const avg=average(tests.map(t=>Number(t.score)).filter(Number.isFinite));const avgTime=average(tests.map(t=>Number(t.elapsedSec)).filter(Number.isFinite));if(avg>=90 && avgTime<=12)return 'hard';if(avg<60)return 'easy';return 'medium'}
+function toast(message){const t=el('toast');t.textContent=cleanText(message);t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),3000)}
+function cleanText(text){return String(text??'').replace(/\s+/g,' ').trim()}
+function cleanNarrative(text){return String(text??'').replace(/[|•*:/\\]/g,' ').replace(/[`~^_=<>]/g,' ').replace(/\s+/g,' ').trim()}
+function normalizeKeyText(text){return String(text??'').toLocaleLowerCase('tr-TR').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9ığüşöçİĞÜŞÖÇ ]/gi,' ').replace(/\s+/g,' ').trim()}
+function esc(text){return String(text??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>{const on=s.id===id;s.classList.toggle('active',on);s.setAttribute('aria-hidden',String(!on));});window.scrollTo({top:0,behavior:'smooth'})}
+function detectBoard(){const wide=innerWidth/Math.max(1,innerHeight)>1.45;const large=Math.min(innerWidth,innerHeight)>=700;document.body.classList.toggle('board-mode',wide&&large);}
+addEventListener('resize',detectBoard);detectBoard();
+function renderLessons(){const box=el('lessonList');box.innerHTML='';Object.entries(APP.courses).forEach(([key,c])=>{const b=document.createElement('button');b.className='lesson';b.style.setProperty('--c',c.color);b.dataset.course=key;b.innerHTML='<div><div class="lessonName">'+c.icon+' '+esc(c.name)+'</div><div class="lessonMeta">Sınıf seviyesi ve gelişim odaklı AI testi</div></div><div class="lessonArrow">›</div>';b.addEventListener('click',()=>openSetup(key));box.appendChild(b)});}
+function openSetup(course){current.course=course;current.presentNumbers=Array.from({length:STUDENT_ROSTER.length},(_,i)=>i+1);el('selectedCourseChip').textContent=APP.courses[course].name;el('focusInput').value='';el('difficulty').value='adaptive';renderRoster();showScreen('setupScreen')}
+function getHistoryForCourse(course){return state.history.filter(x=>x.course===course).slice(-8)}
+function recentQuestionStems(course){return getHistoryForCourse(course).flatMap(x=>Array.isArray(x.questionStems)?x.questionStems:[]).slice(-120)}
+function makeSystemPrompt(course){const c=APP.courses[course];return `Sen 7. sınıf düzeyinde görev yapan bir sınıf değerlendirme yapay zekâsısın. Ders: ${c.name}. ${c.persona} Öğrenciyi küçümseme. Sorular açık ve anlaşılır olsun. Aynı düşünceyi farklı kelimelerle tekrar etme. Her öğrenci için farklı bir soru üret. Çeldiriciler makul ama tek bir seçenek doğru olsun. Analiz metinlerinde sadece sade Türkçe kullan. Emoji ve dekoratif sembol kullanma. Eğik çizgi, dikey çizgi, madde işareti, yıldız, iki nokta gibi süslü ayraçlar kullanma. Çıktıyı istenen JSON şemasına tam uyarak ver.`}
+function answerSchema(studentCount){return {type:'object',properties:{questions:{type:'array',items:{type:'object',properties:{studentNumber:{type:'integer'},topic:{type:'string'},difficulty:{type:'string',enum:['easy','medium','hard']},question:{type:'string'},options:{type:'object',properties:{A:{type:'string'},B:{type:'string'},C:{type:'string'},D:{type:'string'}},required:['A','B','C','D'],additionalProperties:false},correct:{type:'string',enum:['A','B','C','D']}},required:['studentNumber','topic','difficulty','question','options','correct'],additionalProperties:false}}},required:['questions'],additionalProperties:false}}
+function analysisSchema(studentCount){return {type:'object',properties:{classScore:{type:'integer'},classLevel:{type:'string'},summary:{type:'string'},highlights:{type:'array',items:{type:'string'}},topics:{type:'array',items:{type:'object',properties:{name:{type:'string'},score:{type:'integer'},comment:{type:'string'}},required:['name','score','comment'],additionalProperties:false}},students:{type:'array',items:{type:'object',properties:{studentNumber:{type:'integer'},score:{type:'integer'},level:{type:'string'},strength:{type:'string'},improvement:{type:'string'}},required:['studentNumber','score','level','strength','improvement'],additionalProperties:false}},nextTest:{type:'object',properties:{level:{type:'string'},focus:{type:'string'},advice:{type:'string'}},required:['level','focus','advice'],additionalProperties:false}},required:['classScore','classLevel','summary','highlights','topics','students','nextTest'],additionalProperties:false}}
+async function groqRequest({key,model,messages,responseFormat,tools,timeout=65000,maxTokens=12000,reasoningEffort='low'}){if(!key)throw new Error('API anahtarı eksik');const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),timeout);const body={model,messages,temperature:.55,max_tokens:maxTokens,stream:false,reasoning_effort:reasoningEffort};if(responseFormat)body.response_format=responseFormat;if(tools){body.tools=tools;body.tool_choice='required';}const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify(body),signal:controller.signal});clearTimeout(timer);let data=null;try{data=await res.json()}catch{}if(!res.ok){const err=new Error((data&&data.error&&data.error.message)||('HTTP '+res.status));err.status=res.status;throw err}return data}
+function statusMessage(status){const map={400:'İstek biçimi reddedildi. Soru yapısı yeniden deneniyor.',401:'API anahtarı geçersiz veya süresi dolmuş.',402:'Hesap veya kullanım kotası nedeniyle işlem reddedildi.',403:'Bu anahtar için erişim izni reddedildi.',404:'API adresi veya model bulunamadı.',429:'Çok fazla istek gönderildi. Yedek bağlantıya geçiliyor.',500:'Groq sunucusunda geçici hata oluştu.',501:'İstenen işlem desteklenmiyor.',502:'Groq ağ geçidinden geçici yanıt alınamadı.',503:'Servis geçici olarak yoğun.',504:'Sunucu yanıtı zaman aşımına uğradı.',552:'Ağ geçidi tarafından özel bir hata döndü.'};return map[status]||'Beklenmeyen bağlantı hatası oluştu.'}
+function shouldFailover(status){return [401,402,403,404,429,500,501,502,503,504,520,521,522,523,524,525,526,527,530,552].includes(Number(status))}
+async function requestWithFallback(args){const tries=[];if(state.primary)tries.push({key:state.primary,model:state.model,label:'Ana API'});if(state.backup&&state.backup!==state.primary)tries.push({key:state.backup,model:state.backupModel,label:'Yedek API'});if(!tries.length)throw new Error('Önce API Ayarları bölümünden en az bir API anahtarı ekleyin.');let last;for(let i=0;i<tries.length;i++){const t=tries[i];try{return await groqRequest({...args,key:t.key,model:t.model})}catch(err){last=err;const status=Number(err.status||0);if(status===400 && args.responseFormat && i===0){try{return await groqRequest({...args,key:t.key,model:t.model,responseFormat:{type:'json_object'}})}catch(repairErr){last=repairErr}}if(i<tries.length-1 && (shouldFailover(status)||!status)){toast(t.label+' başarısız. Yedek bağlantı deneniyor.');continue}throw new Error(status?statusMessage(status):('Bağlantı kurulamadı. '+(err.message||'')))}}throw last||new Error('Bağlantı kurulamadı')}
+function getContent(data){return data?.choices?.[0]?.message?.content||''}
+function safeParseJSON(text){try{return JSON.parse(text)}catch{const cleaned=text.replace(/^```json/i,'').replace(/^```/,'').replace(/```$/,'').trim();try{return JSON.parse(cleaned)}catch{return null}}}
+function normalizeQuestions(data,count){
+ const qs=Array.isArray(data?.questions)?data.questions:[];
+ const out=[];
+ const seenNumbers=new Set();
+ const seenQuestions=new Set();
+ for(const q of qs){
+  const n=Number(q?.studentNumber);
+  if(!Number.isInteger(n)||n<1||n>count||seenNumbers.has(n))continue;
+  const question=String(q?.question??'').trim();
+  const opts=q?.options||{};
+  const values=['A','B','C','D'].map(k=>String(opts?.[k]??'').trim());
+  const normalized=normalizeKeyText(question);
+  const optionNorm=values.map(normalizeKeyText);
+  if(!question||question.length<12||seenQuestions.has(normalized))continue;
+  if(values.some(v=>!v||v.length<1))continue;
+  if(new Set(optionNorm).size!==4)continue;
+  if(!['A','B','C','D'].includes(q?.correct))continue;
+  if(optionNorm.some(v=>v.includes('konuyla iliskilidir fakat verilen bilgiye uymaz')||v.includes('sorunun kosullarindan cikarilamaz')||v.includes('dogrudan verilen bilgiyle uyusur')||v.includes('tam tersini ifade eder')))continue;
+  seenNumbers.add(n);seenQuestions.add(normalized);
+  out.push({studentNumber:n,topic:cleanText(q.topic||'Genel'),difficulty:['easy','medium','hard'].includes(q.difficulty)?q.difficulty:'medium',question,options:{A:values[0],B:values[1],C:values[2],D:values[3]},correct:q.correct});
+ }
+ return out.sort((a,b)=>a.studentNumber-b.studentNumber);
+}
+
+function deterministicQuestion(course,n,difficulty,focus){
+ const bank={
+  matematik:[
+   {topic:'Rasyonel sayılar',question:'Bir pastanın 3 bölü 4ü yeniyor. Geriye pastanın kaçta kaçı kalır?',options:{A:'1 bölü 4',B:'1 bölü 2',C:'2 bölü 3',D:'3 bölü 4'},correct:'A'},
+   {topic:'Tam sayılar',question:'Eksi 7 ile 12 sayısının toplamı kaçtır?',options:{A:'19',B:'5',C:'eksi 5',D:'eksi 19'},correct:'C'},
+   {topic:'Oran',question:'Bir sınıfta 12 kız ve 18 erkek öğrenci vardır. Kızların erkeklere oranı kaçtır?',options:{A:'2 bölü 3',B:'3 bölü 2',C:'2 bölü 5',D:'3 bölü 5'},correct:'A'},
+   {topic:'Yüzdeler',question:'200 liranın yüzde 15i kaç liradır?',options:{A:'15',B:'20',C:'30',D:'35'},correct:'C'},
+   {topic:'Cebir',question:'x artı 7 eşittir 19 olduğuna göre x kaçtır?',options:{A:'10',B:'11',C:'12',D:'13'},correct:'C'},
+   {topic:'Geometri',question:'Bir üçgenin iç açılarından ikisi 50 ve 60 derecedir. Üçüncü açı kaç derecedir?',options:{A:'60',B:'70',C:'80',D:'90'},correct:'B'}
+  ],
+  turkce:[
+   {topic:'Cümlede anlam',question:'Aşağıdaki cümlelerin hangisinde neden sonuç ilişkisi vardır?',options:{A:'Yağmur yağdığı için maç ertelendi.',B:'Yarın arkadaşlarımla buluşacağım.',C:'Kitabı masanın üzerine bıraktı.',D:'Akşam erkenden uyudu.'},correct:'A'},
+   {topic:'Ana düşünce',question:'Kitap okumak kelime dağarcığını geliştirir ve farklı bakış açıları kazandırır. Bu cümlenin ana düşüncesi hangisidir?',options:{A:'Kitaplar pahalı olabilir.',B:'Kitap okumak kişiye birçok yönden katkı sağlar.',C:'Her gün aynı kitabı okumak gerekir.',D:'Kelime öğrenmenin tek yolu kitap okumaktır.'},correct:'B'},
+   {topic:'Sözcükte anlam',question:'Aşağıdaki sözcük çiftlerinden hangisi zıt anlamlıdır?',options:{A:'sıcak soğuk',B:'mutlu neşeli',C:'büyük iri',D:'konuk misafir'},correct:'A'}
+  ],
+  sosyal:[
+   {topic:'Tarih',question:'Türkiye Cumhuriyetinin ilk cumhurbaşkanı kimdir?',options:{A:'İsmet İnönü',B:'Mustafa Kemal Atatürk',C:'Celal Bayar',D:'Fevzi Çakmak'},correct:'B'},
+   {topic:'Coğrafya',question:'Bir yerin deniz seviyesinden yüksekliğine ne ad verilir?',options:{A:'Enlem',B:'Boylam',C:'Yükselti',D:'İklim'},correct:'C'},
+   {topic:'Vatandaşlık',question:'Demokrasinin temel özelliklerinden biri aşağıdakilerden hangisidir?',options:{A:'Yönetimin tek kişide olması',B:'Halkın yönetime katılması',C:'Seçimlerin yapılmaması',D:'Kuralların sadece bazı kişiler için geçerli olması'},correct:'B'}
+  ],
+  ingilizce:[
+   {topic:'Daily routines',question:'Which sentence is correct?',options:{A:'She go to school every day.',B:'She goes to school every day.',C:'She going to school every day.',D:'She gone to school every day.'},correct:'B'},
+   {topic:'Vocabulary',question:'What is the opposite of the word “early”?',options:{A:'late',B:'fast',C:'near',D:'easy'},correct:'A'},
+   {topic:'Present simple',question:'Choose the correct answer: Tom ___ football on Sundays.',options:{A:'play',B:'plays',C:'playing',D:'played'},correct:'B'}
+  ],
+  din:[
+   {topic:'Değerler',question:'Yardımlaşma davranışının toplum üzerindeki etkilerinden biri hangisidir?',options:{A:'Dayanışmayı güçlendirmek',B:'İnsanları birbirinden uzaklaştırmak',C:'Sorunları artırmak',D:'Sorumlulukları azaltmak'},correct:'A'},
+   {topic:'Ahlak',question:'Doğru sözlü olmak aşağıdaki değerlerden hangisiyle en doğrudan ilişkilidir?',options:{A:'Dürüstlük',B:'Savurganlık',C:'Kıskançlık',D:'Kararsızlık'},correct:'A'},
+   {topic:'Sorumluluk',question:'Bir öğrencinin ders araçlarını düzenli hazırlaması hangi davranışa örnektir?',options:{A:'Sorumluluk',B:'İsraf',C:'Önyargı',D:'Unutkanlık'},correct:'A'}
+  ],
+  fen:[
+   {topic:'Kuvvet ve enerji',question:'Bir cismin hareket yönüne doğru kuvvet uygulanırsa cismin hareketinde genel olarak ne beklenir?',options:{A:'Hızı azalır',B:'Hızı artabilir',C:'Kütlesi yok olur',D:'Rengi değişir'},correct:'B'},
+   {topic:'Hücre',question:'Hücrenin yönetim ve kalıtsal bilgiyi taşıma görevinde önemli olan yapı hangisidir?',options:{A:'Çekirdek',B:'Hücre duvarı',C:'Koful',D:'Ribozom'},correct:'A'},
+   {topic:'Elektrik',question:'Basit bir elektrik devresinde ampulün ışık vermesi için devrenin nasıl olması gerekir?',options:{A:'Açık',B:'Kapalı',C:'Pilsiz',D:'Kesik'},correct:'B'}
+  ],
+  teknoloji:[
+   {topic:'Tasarım süreci',question:'Bir tasarım probleminde ilk olarak neyin belirlenmesi en uygundur?',options:{A:'Kullanıcı ihtiyacının',B:'Ürünün reklamının',C:'Ürünün satış fiyatının',D:'Ambalaj renginin'},correct:'A'},
+   {topic:'Problem çözme',question:'Bir ürünün prototipini hazırlamanın temel amaçlarından biri hangisidir?',options:{A:'Ürünü test etmek',B:'Ürünü gizlemek',C:'Ürünün adını değiştirmek',D:'Sadece süslemek'},correct:'A'},
+   {topic:'Güvenli teknoloji',question:'İnternette güçlü bir parola için hangisi daha uygundur?',options:{A:'123456',B:'adsoyad',C:'Farklı türde karakterler içeren uzun bir parola',D:'doğum yılı'},correct:'C'}
+  ]
+ };
+ const list=bank[course]||bank.fen;
+ const base=list[(n-1)%list.length];
+ const cycle=Math.floor((n-1)/list.length);
+ const q={...base,studentNumber:n,options:{...base.options}};
+ if(cycle>0 && course==='matematik'){
+  const a=cycle+2,b=cycle+4;
+  q.topic='İşlem';q.question=`${a} çarpı ${b} işleminin sonucu kaçtır?`;q.options={A:String(a+b),B:String(a*b),C:String(a*b+1),D:String(Math.max(0,a*b-2))};q.correct='B';
+ }
+ if(focus)q.topic=focus;
+ return q;
+}
+
+async function generateQuestions(){
+ const present=selectedPresentNumbers();
+ const count=present.length;
+ const difficulty=el('difficulty').value;
+ const focus=el('focusInput').value.trim();
+ current.presentNumbers=present;current.students=count;current.difficulty=difficulty;current.focus=focus;
+ showScreen('loadingScreen');
+ setLoading('Test hazırlanıyor','Yapay zekâ bütün soruları tek toplu istekte hazırlıyor.',12);
+ if(!state.primary&&!state.backup){
+  toast('API anahtarı bulunamadı. API Ayarlarından bağlantı ekleyin.');
+  showScreen('setupScreen');
+  return;
+ }
+ const history=recentQuestionStems(current.course).map(normalizeKeyText).slice(-100);
+ const prior=history.length?`Daha önce kullanılan soru köklerinden özellikle kaçın. Eski kökler şunlardır: ${JSON.stringify(history)}`:'Daha önce kullanılmuş kök yok.';
+ const researchContext=current.research?.topic && current.research?.summary ? `Bu test web araştırmasına dayalıdır. Konu: ${current.research.topic}. Araştırma notları: ${current.research.summary.slice(0,18000)}` : '';
+ const c=APP.courses[current.course];
+ const targets=current.presentNumbers.map((n,i)=>({testNumber:i+1,studentId:profileForNumber(n).id,studentName:profileForNumber(n).name,targetDifficulty:targetDifficultyForStudent(n,current.course)}));
+ const user=`7. sınıf ${c.name} dersi için tam ${count} farklı çoktan seçmeli soru üret. Testteki soru numaraları 1 ile ${count} arasında her biri tam bir kez kullanılmalı. Bu sıra numaraları yalnızca bu test içindir. Her öğrenciye yalnızca bir soru ver. Soruların metni doğal, anlaşılır ve yaşa uygun Türkçe olmalı. Matematikte veya gerektiği yerde işlem ve birim kullanabilirsin. Her sorunun easy medium veya hard olmak üzere bir zorluk seviyesi olmalı. Öğrenciye göre önerilen zorluk hedefleri: ${JSON.stringify(targets)}. Önceki profili olan öğrencilerde hedef zorluğu bu bilgiye göre uygula; ilk testte hedef zorluğu orta seviyeden başlat. Her sorunun A, B, C ve D olmak üzere dört seçeneği bulunmalı. Dört seçenek de soruyla doğrudan ilişkili ve anlamlı olmalı. Yalnız bir seçenek doğru olmalı. Seçenekler birbirinin kopyası, genel geçer açıklama veya boş cümle olamaz. Kesinlikle şu tarz seçenekler kullanma: konuyla ilişkilidir, verilen bilgiyle uyuşur, sorunun koşullarından çıkarılamaz, tam tersini ifade eder. Her soru anlam ve yapı bakımından diğerlerinden belirgin biçimde farklı olsun. Aynı soruyu sadece sayıları değiştirerek tekrar etmekten kaçın. Zorluk seviyesi ${difficulty}. Özel odak ${focus||'belirtilmedi'}. ${prior} ${researchContext} Sadece istenen JSON yapısını üret.`;
+ const schema={type:'json_schema',json_schema:{name:'class_test',strict:true,schema:answerSchema(count)}};
+ let lastError=null;
+ for(let attempt=1;attempt<=2;attempt++){
+  try{
+   setLoading(attempt===1?'Sorular hazırlanıyor':'Sorular yeniden düzenleniyor',attempt===1?'Her öğrencinin kendine ait farklı sorusu ve dört gerçek seçenek oluşturuluyor.':'İlk kontrolde yeterli farklılık bulunmadı. Sorular tekrar düzenleniyor.',attempt===1?32:55);
+   const data=await requestWithFallback({messages:[{role:'system',content:makeSystemPrompt(current.course)},{role:'user',content:user+(attempt===2?' Özellikle önceki üretimde sorun çıkmış olabilecek tekrarları kontrol et ve tüm seçenekleri konuya özel yeni seçeneklerle değiştir.':'')}],responseFormat:schema,maxTokens:Math.min(24000,7000+count*420),reasoningEffort:'low',timeout:70000});
+   setLoading('Sorular kontrol ediliyor','Soru tekrarları, seçenek tekrarları ve öğrenci numaraları denetleniyor.',78);
+   const parsed=safeParseJSON(getContent(data));
+   const qs=normalizeQuestions(parsed,count);
+   if(qs.length!==count)throw new Error(`Yapay zekâ ${count} farklı soru yerine ${qs.length} geçerli soru döndürdü.`);
+   const signature=new Set(qs.map(q=>normalizeKeyText(q.question)));
+   const optSig=qs.flatMap(q=>Object.values(q.options).map(normalizeKeyText));
+   if(signature.size!==count||new Set(optSig).size<Math.min(optSig.length,Math.floor(count*2.2)))throw new Error('Sorular veya seçenekler yeterince farklı değil.');
+   current.questions=qs;current.questions.forEach((q,i)=>q.studentNumber=current.presentNumbers[i]);current.answers=new Array(count).fill(null);current.index=0;current.testId='T'+Date.now();current.usedFallback=false;
+   setLoading('Test hazır','Bütün sorular sınıfta oynanmak üzere cihazda hazırlandı.',100);
+   playUiTone('ready');
+   setTimeout(showQuestion,400);
+   return;
+  }catch(err){lastError=err;if(attempt===1)toast('İlk soru üretiminde sorun oluştu. Yedek üretim deneniyor.');}
+ }
+ toast(lastError?.message||'Test oluşturulamadı.');
+ setLoading('Bağlantı kullanılamadı','Sınıfın beklememesi için yalnızca acil durum yerel soru havuzuna geçilebilir.',15);
+ const useLocal=confirm('Yapay zekâ ile test oluşturulamadı. Acil durum yerel soru havuzunu kullanmak ister misiniz?');
+ if(useLocal){const qs=[];for(let n=1;n<=count;n++)qs.push(deterministicQuestion(current.course,n,difficulty,focus));current.questions=qs;current.questions.forEach((q,i)=>q.studentNumber=current.presentNumbers[i]);current.answers=new Array(count).fill(null);current.index=0;current.testId='LOCAL'+Date.now();current.usedFallback=true;playUiTone('ready');setTimeout(showQuestion,350)}else showScreen('setupScreen');
+}
+
+function setLoading(title,text,progress){el('loadingTitle').textContent=title;el('loadingText').textContent=text;el('loadingProgress').style.width=progress+'%'}
+function showQuestion(){
+ stopQuestionTimer();
+ showScreen('questionScreen');
+ const q=current.questions[current.index];
+ const mappedNumber=current.presentNumbers[current.index]||q.studentNumber;
+ q.studentNumber=mappedNumber;
+ const profile=profileForNumber(mappedNumber);
+ el('currentStudentLabel').textContent=profile.name;
+ el('currentStudentProfile').textContent='Profil '+String(mappedNumber).padStart(2,'0');
+ el('questionCounter').textContent=(current.index+1)+' / '+current.questions.length;
+ el('testProgress').style.width=((current.index)/current.questions.length*100)+'%';
+ el('questionTopic').textContent=cleanText(q.topic);
+ el('questionText').textContent=q.question;
+ const grid=el('optionGrid');grid.innerHTML='';
+ ['A','B','C','D'].forEach(letter=>{
+   const b=document.createElement('button');b.className='option';b.innerHTML='<span class="letter">'+letter+'</span><span>'+esc(q.options[letter])+'</span>';
+   b.addEventListener('click',()=>chooseOption(letter));grid.appendChild(b);
+ });
+ el('nextQuestionBtn').disabled=true;
+ el('nextQuestionBtn').textContent=current.index===current.questions.length-1?'Testi Bitir':'Cevabı Kaydet';
+ el('questionHint').textContent='Cevabını seç ve yerine geç.';
+ startQuestionTimer();
+}
+function chooseOption(letter){
+ const q=current.questions[current.index];
+ const n=q.studentNumber;
+ const elapsed=elapsedSeconds();
+ stopQuestionTimer();
+ current.questionEvents.push({type:'option_selected',option:letter,at:Number(elapsed.toFixed(2))});
+ current.answers[current.index]={studentNumber:n,studentId:profileForNumber(n).id,studentName:profileForNumber(n).name,selected:letter,correct:q.correct,isCorrect:letter===q.correct,elapsedSec:Number(elapsed.toFixed(2)),question:q.question,topic:q.topic,difficulty:q.difficulty,events:[...current.questionEvents]};
+ document.querySelectorAll('.option').forEach(b=>{b.disabled=true;const l=b.querySelector('.letter').textContent;if(l===letter)b.classList.add(letter===q.correct?'correct':'wrong');if(letter!==q.correct&&l===q.correct)b.classList.add('correct')});
+ el('nextQuestionBtn').disabled=false;
+ el('questionHint').textContent=formatSec(elapsed)+' içinde cevap kaydedildi.';
+ playTone(letter===q.correct);
+}
+let audioContext=null;function getAudio(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;if(!audioContext)audioContext=new C();if(audioContext.state==='suspended')audioContext.resume();return audioContext}catch{return null}}
+function playUiTone(kind){const c=getAudio();if(!c)return;try{const notes=kind==='ready'?[523.25,659.25,783.99]:kind==='click'?[440]:kind==='wrong'?[196,164]:[659.25,783.99];let t=c.currentTime+.01;notes.forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(f,t+i*.09);g.gain.setValueAtTime(.0001,t+i*.09);g.gain.exponentialRampToValueAtTime(.045,t+i*.09+.018);g.gain.exponentialRampToValueAtTime(.0001,t+i*.09+.11);o.connect(g);g.connect(c.destination);o.start(t+i*.09);o.stop(t+i*.09+.12)})}catch{}}
+function playTone(ok){playUiTone(ok?'correct':'wrong')}
+function nextQuestion(){if(!current.answers[current.index])return;current.answers[current.index].events=[...(current.answers[current.index].events||[]),{type:'answer_saved',at:current.answers[current.index].elapsedSec}];if(current.index<current.questions.length-1){current.index++;showQuestion()}else startAnalysis()}
+async function startAnalysis(){
+ showScreen('analysisLoadingScreen');el('analysisProgress').style.width='18%';
+ const answers=current.answers.map((a,i)=>({...a,question:current.questions[i].question,topic:current.questions[i].topic,difficulty:current.questions[i].difficulty}));
+ const timing=timingSummary(answers);
+ const localScore=Math.round(answers.filter(Boolean).filter(a=>a.isCorrect).length/current.questions.length*100);
+ const topicLocal={};answers.filter(Boolean).forEach(a=>{const k=a.topic||'Genel';topicLocal[k]??={c:0,t:0};topicLocal[k].t++;if(a.isCorrect)topicLocal[k].c++});
+ const named=studentDataForAnalysis(answers);
+ const previousProfiles=priorProfileSummary(current.presentNumbers,current.course);
+ const payload=`Sınıf testi sonuçlarını analiz et. Ders: ${APP.courses[current.course].name}. Öğrenci sayısı: ${current.students}. Referans ortalama cevap süresi 10 saniyedir. Cevap kayıtları: ${JSON.stringify(named)}. Önceki testlerden gelen öğrenci profilleri: ${JSON.stringify(previousProfiles)}. Genel süre özeti: ${JSON.stringify(timing)}. Yerel hesaplanan sınıf skoru: ${localScore}. Her öğrenciyi kendi cevap doğruluğu, soru zorluğu, cevap süresi, yanlış cevapları ve test içindeki hareket kayıtlarına göre değerlendir. Tek bir yanlış cevabı tek başına öğrencinin seviyesini belirlemek için kullanma. İlk test ise geçmiş performans varmış gibi konuşma. Hızlı cevap doğruysa bunu olumlu hız olarak, hızlı cevap yanlışsa olası acele etme davranışı olarak, uzun süre ve yanlış cevap birlikteyse zorlanma ihtimali olarak değerlendir. Süreyi zorlukla birlikte yorumla. Öğrenci adlarını raporda kullan. Hiçbir öğrenciyi aşağılayıcı şekilde etiketleme. Bir sonraki test için açık ve ölçülebilir öneriler üret.`;
+ try{
+  el('analysisProgress').style.width='48%';
+  const data=await requestWithFallback({messages:[{role:'system',content:makeSystemPrompt(current.course)+' Sonuç analizinde doğru ve yanlış cevaplara ek olarak cevap sürelerini mutlaka kullan. Öğrenci isimlerini koru. Süre karşılaştırmasını 10 saniyelik referansla yap ama bunu tek başına başarı ölçüsü kabul etme.'},{role:'user',content:payload}],responseFormat:{type:'json_schema',json_schema:{name:'class_analysis',strict:true,schema:analysisSchema(current.students)}},maxTokens:14000,reasoningEffort:'low',timeout:70000});
+  el('analysisProgress').style.width='78%';
+  const parsed=safeParseJSON(getContent(data));if(!parsed)throw new Error('Analiz verisi okunamadı.');
+  current.analysis=normalizeAnalysis(parsed,answers);current.analysis.timing=timing;saveResult();
+  el('analysisProgress').style.width='100%';setTimeout(renderResult,380);
+ }catch(err){
+  current.analysis=localAnalysis(answers,topicLocal);current.analysis.timing=timing;saveResult();
+  el('analysisProgress').style.width='100%';setTimeout(renderResult,450);
+ }
+}
+function levelByScore(s){if(s>=90)return'Çok iyi';if(s>=75)return'İyi';if(s>=55)return'Orta';return'Geliştirilmeli'}
+function normalizeAnalysis(a,answers){
+ a.classScore=Math.max(0,Math.min(100,Number(a.classScore)||0));
+ a.classLevel=cleanNarrative(a.classLevel||levelByScore(a.classScore));
+ a.summary=cleanNarrative(a.summary||'Sınıf sonuçları genel olarak değerlendirildi.');
+ a.highlights=(Array.isArray(a.highlights)?a.highlights:[]).map(cleanNarrative).filter(Boolean).slice(0,5);
+ a.topics=(Array.isArray(a.topics)?a.topics:[]).map(x=>({name:cleanNarrative(x.name||'Genel'),score:Math.max(0,Math.min(100,Number(x.score)||0)),comment:cleanNarrative(x.comment||'')})).slice(0,8);
+ const map=new Map((Array.isArray(a.students)?a.students:[]).map(s=>[Number(s.studentNumber),s]));
+ a.students=answers.map(x=>{
+   const s=map.get(x.studentNumber)||{};
+   const score=x.isCorrect?100:0;
+   const prof=profileForNumber(x.studentNumber);
+   const v={studentNumber:x.studentNumber,studentId:prof.id,studentName:prof.name,score:Number(s.score??score),level:cleanNarrative(s.level||levelByScore(score)),strength:cleanNarrative(s.strength||(x.isCorrect?'Soruyu doğru değerlendirdi.':'Bu soruda doğru sonuca ulaşamadı.')),improvement:cleanNarrative(s.improvement||(x.isCorrect?'Benzer sorularla pekiştirebilir.':'Aynı konu üzerinde biraz daha pratik yapabilir.')),elapsedSec:Number(x.elapsedSec||0),selected:x.selected,correct:x.correct,isCorrect:x.isCorrect,difficulty:x.difficulty};
+   return v;
+ });
+ a.nextTest=a.nextTest||{level:'Sınıfa göre uyarlanmış',focus:'Sınıfın zorlandığı alanlar',advice:'Bir sonraki testte zorlanılan konulara biraz daha fazla yer verilecek.'};
+ a.nextTest.level=cleanNarrative(a.nextTest.level);a.nextTest.focus=cleanNarrative(a.nextTest.focus);a.nextTest.advice=cleanNarrative(a.nextTest.advice);
+ return a;
+}
+function localAnalysis(answers,topicLocal){
+ const vals=answers.filter(Boolean);
+ const scores=vals.map(a=>a.isCorrect?100:0);
+ const classScore=Math.round(scores.reduce((a,b)=>a+b,0)/Math.max(1,scores.length));
+ const timing=timingSummary(vals);
+ const topics=Object.entries(topicLocal).map(([name,x])=>({name,score:Math.round(x.c/x.t*100),comment:x.c===x.t?'Bu alanda tüm cevaplar doğru.':'Bu alanda bazı öğrencilerin tekrar yapması yararlı olur.'}));
+ const students=vals.map(a=>{
+   const speed=a.elapsedSec<=8?'hızlı':a.elapsedSec<=15?'dengeli':'yavaş';
+   let note=a.isCorrect?(speed==='hızlı'?'Hızlı ve doğru cevap verdi.':'Doğru cevap verdi.'):(speed==='hızlı'?'Yanlış cevap hızlı geldiği için acele etme ihtimali takip edilebilir.':speed==='yavaş'?'Uzun düşünmesine rağmen yanlış cevap verdiği için konuya dönük destek yararlı olabilir.':'Yanlış cevap verdi; tek başına bu cevapla kesin bir yorum yapılmamalı.');
+   return {studentNumber:a.studentNumber,studentId:a.studentId,studentName:a.studentName,score:a.isCorrect?100:0,level:levelByScore(a.isCorrect?100:0),strength:note,improvement:a.isCorrect?'Benzer sorularla pekiştirebilir.':'Konuyu tekrar edip yeni örnekler çözebilir.',elapsedSec:a.elapsedSec,selected:a.selected,correct:a.correct,isCorrect:a.isCorrect,difficulty:a.difficulty};
+ });
+ return {classScore,classLevel:levelByScore(classScore),summary:'Sınıf testi tamamlandı. Doğru ve yanlış cevaplar cevaplama süreleriyle birlikte değerlendirildi.',highlights:[classScore>=75?'Sınıfın genel başarısı iyi düzeyde.':'Temel konularda biraz daha tekrar yararlı olabilir.',`Sınıfın ortalama cevap süresi ${formatSec(timing.average)}.`,`${timing.within10} cevap 10 saniye içinde, ${timing.over10} cevap 10 saniyeden sonra verildi.`],topics,students,nextTest:{level:classScore>=75?'Orta üstü':'Temel ve orta',focus:'Sınıfın daha az başarılı olduğu konular',advice:'Bir sonraki testte zorlanılan konulara daha fazla soru ayrılması ve cevap süresi davranışının tekrar izlenmesi öneriliyor.'},timing};
+}
+function saveResult(){
+ const stems=current.questions.map(q=>String(q.question).slice(0,120));
+ const answers=current.answers.filter(Boolean);
+ const timing=timingSummary(answers);
+ const rec={id:current.testId,course:current.course,courseName:APP.courses[current.course].name,students:current.students,studentNumbers:current.presentNumbers,profileSnapshot:current.presentNumbers.map(n=>{const p=profileForNumber(n);return {studentNumber:n,studentId:p.id,studentName:p.name}}),score:current.analysis.classScore,level:current.analysis.classLevel,focus:current.analysis.nextTest?.focus||'',date:new Date().toISOString(),questionStems:stems,timing,analysis:current.analysis};
+ answers.forEach(a=>{
+   const p=state.profiles[a.studentNumber-1];if(!p)return;
+   p.tests=Array.isArray(p.tests)?p.tests:[];
+   p.tests.push({date:rec.date,course:rec.course,score:a.isCorrect?100:0,isCorrect:a.isCorrect,elapsedSec:a.elapsedSec,selected:a.selected,correct:a.correct,topic:a.topic,difficulty:a.difficulty});
+   if(p.tests.length>30)p.tests=p.tests.slice(-30);
+ });
+ state.history=[...state.history,rec].slice(-40);saveState();
+}
+function renderResult(){
+ const a=current.analysis;showScreen('resultScreen');el('resultCourseChip').textContent=APP.courses[current.course].name;el('classScore').textContent=Math.round(a.classScore)+'%';
+ el('classSummary').textContent=a.summary+' Sınıf seviyesi: '+a.classLevel+'.';
+ el('highlightList').innerHTML=(a.highlights||[]).map((x,i)=>'<div class="metric"><div class="metric-top"><span>Öne çıkan '+(i+1)+'</span></div><div class="muted small" style="margin-top:7px">'+esc(x)+'</div></div>').join('')||'<div class="empty">Yeterli öne çıkan bilgi bulunamadı.</div>';
+ el('topicMetrics').innerHTML=(a.topics||[]).map(x=>'<div class="metric"><div class="metric-top"><span>'+esc(x.name)+'</span><span>'+x.score+'%</span></div><div class="bar"><i style="width:'+x.score+'%"></i></div><div class="muted small" style="margin-top:7px">'+esc(x.comment)+'</div></div>').join('')||'<div class="empty">Konu dağılımı bulunamadı.</div>';
+ const t=a.timing||timingSummary(current.answers);
+ el('studentResultMeta').textContent=(a.students||[]).length+' öğrenci değerlendirildi';
+ let timingHtml='<div class="analysis-timing" style="margin:0 0 12px">'+
+ '<div class="timing-card"><b>'+formatSec(t.average)+'</b><span>Ortalama cevap süresi</span></div>'+
+ '<div class="timing-card"><b>'+formatSec(t.fastest)+'</b><span>En hızlı cevap</span></div>'+
+ '<div class="timing-card"><b>'+formatSec(t.slowest)+'</b><span>En geç cevap</span></div>'+
+ '<div class="timing-card"><b>'+t.within10+'</b><span>10 saniye içinde</span></div></div>';
+ const rows=a.students||[];
+ el('studentTable').innerHTML=timingHtml+rows.map(s=>'<div class="student-row"><strong>'+esc(s.studentName||findStudentName(s.studentNumber))+'</strong><span>'+esc(s.strength)+'</span><b>'+Math.round(s.score)+'%</b><span class="level">'+esc(s.level)+'</span><span style="grid-column:2 / -1" class="muted small">Gelişim alanı: '+esc(s.improvement)+'</span><span class="timing-inline"><span class="timing-pill">Süre: '+formatSec(s.elapsedSec)+'</span><span class="timing-pill">Cevap: '+esc(s.selected)+'</span><span class="timing-pill">Doğru cevap: '+esc(s.correct)+'</span><span class="timing-pill">Zorluk: '+esc(s.difficulty)+'</span></span></div>').join('');
+ el('nextTestAdvice').innerHTML='<strong>'+esc(a.nextTest.level)+'</strong><br>'+esc(a.nextTest.advice)+'<br><span class="muted small">Odak: '+esc(a.nextTest.focus)+'</span>';
+}
+function renderHistory(){showScreen('historyScreen');const h=state.history.slice().reverse();el('historyList').innerHTML=h.length?h.map(x=>'<div class="history-item"><div><strong>'+esc(x.courseName)+'</strong><span>'+new Date(x.date).toLocaleString('tr-TR')+' · '+x.students+' öğrenci</span></div><div style="text-align:right"><strong>'+x.score+'%</strong><span>'+esc(x.level)+'</span></div></div>').join(''):'<div class="empty">Henüz kayıtlı test yok.</div>'}
+function openApi(){el('primaryApi').value=state.primary;el('backupApi').value=state.backup;el('modelSelect').value=state.model||APP.modelDefault;el('backupModelSelect').value=state.backupModel||'openai/gpt-oss-120b';el('apiModal').classList.add('open');el('apiModal').setAttribute('aria-hidden','false')}
+function closeApi(){el('apiModal').classList.remove('open');el('apiModal').setAttribute('aria-hidden','true')}
+async function testKey(key,model,statusId){if(!key){el(statusId).textContent='Anahtar boş.';return}el(statusId).textContent='Bağlantı test ediliyor';try{const data=await groqRequest({key,model,messages:[{role:'user',content:'Sadece şu kelimeyi yaz: Hazır'}],maxTokens:20,timeout:25000});el(statusId).textContent='Bağlantı başarılı';toast((data?.choices?.[0]?.message?.content||'Bağlantı başarılı').replace(/[^\p{L}\p{N}\s]/gu,' ').trim())}catch(e){el(statusId).textContent=statusMessage(e.status||0);toast(statusMessage(e.status||0))}}
+function fillResearchCourses(){const s=el('researchCourse');s.innerHTML='';Object.entries(APP.courses).forEach(([key,c])=>{const o=document.createElement('option');o.value=key;o.textContent=c.name;s.appendChild(o)});}
+function openResearch(){fillResearchCourses();el('researchStudents').value=30;el('researchStudentsValue').textContent='30';el('researchTopic').value='';el('researchForm').classList.remove('research-hidden');el('researchBusy').classList.add('research-hidden');el('researchResult').classList.add('research-hidden');el('researchModal').classList.add('open');el('researchModal').setAttribute('aria-hidden','false');el('researchTopic').focus()}
+function closeResearch(){el('researchModal').classList.remove('open');el('researchModal').setAttribute('aria-hidden','true')}
+function setResearchBusy(title,text,progress){el('researchBusyTitle').textContent=title;el('researchBusyText').textContent=text;el('researchProgress').style.width=progress+'%'}
+function extractSearchResults(data){const executed=data?.choices?.[0]?.message?.executed_tools||data?.choices?.[0]?.message?.executedTools||[];const results=[];executed.forEach(tool=>{const arr=tool?.search_results||tool?.searchResults||[];if(Array.isArray(arr))arr.forEach(x=>{if(x?.url)results.push({title:x.title||'Kaynak',url:x.url,content:x.content||''})})});return results.slice(0,8)}
+async function startWebResearch(){const topic=el('researchTopic').value.trim();const course=el('researchCourse').value;const students=Number(el('researchStudents').value);if(topic.length<3){toast('Araştırılacak konuyu yazın.');return}if(!state.primary&&!state.backup){toast('Web araştırması için önce API ayarlarını kaydedin.');return}
+ current.course=course;current.students=students;current.focus=topic;current.research={topic,summary:'',sources:[]};
+ el('researchForm').classList.add('research-hidden');el('researchResult').classList.add('research-hidden');el('researchBusy').classList.remove('research-hidden');
+ setResearchBusy('Web araştırması yapılıyor','Konu için web kaynakları taranıyor.',18);playUiTone('click');
+ try{
+  const data=await requestWithFallback({messages:[{role:'system',content:`Sen 7. sınıf eğitim araştırma asistanısın. ${APP.courses[course].name} dersi için verilen konuyu web üzerinde araştır. Güvenilir eğitim kaynaklarına ve resmi kaynaklara öncelik ver. Araştırmanın sonunda öğrencilerin soru çözmesine yarayacak doğru bilgiler çıkar. Soruları burada üretme. Sadece araştırılmış bilgileri ve kullandığın kaynakları sade Türkçe ile özetle. Karmaşık semboller kullanma.`},{role:'user',content:`Konu: ${topic}. Seviye: 7. sınıf. Araştırma amacı: Bu konu hakkında doğru bilgiler bulmak, ardından bu bilgilerden özgün çoktan seçmeli sorular üretmek.`}],tools:[{type:'browser_search'}],maxTokens:4200,timeout:90000,reasoningEffort:'low'});
+  setResearchBusy('Kaynaklar bulundu','Araştırma özeti hazırlanıyor.',62);
+  const summary=String(getContent(data)||'').trim();const sources=extractSearchResults(data);
+  if(!summary)throw new Error('Web araştırması yanıtı boş döndü.');
+  current.research.summary=summary;current.research.sources=sources;
+  el('researchResultChip').textContent='Araştırma tamamlandı';el('researchResultMeta').textContent=`${APP.courses[course].name} · ${students} öğrenci`;el('researchSummaryText').textContent=summary.length>7000?summary.slice(0,7000)+'…':summary;
+  el('researchSources').innerHTML=sources.length?sources.map(x=>`<div class="source-item"><strong>${esc(x.title)}</strong><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(x.url)}</a>${x.content?`<span class="muted small">${esc(cleanText(x.content).slice(0,240))}</span>`:''}</div>`).join(''):'<div class="empty">Arama sonuçları özet içinde kullanıldı. Ayrı kaynak listesi alınamadı.</div>';
+  el('researchBusy').classList.add('research-hidden');el('researchResult').classList.remove('research-hidden');playUiTone('ready');
+ }catch(e){el('researchBusy').classList.add('research-hidden');el('researchForm').classList.remove('research-hidden');toast(e.message||'Web araştırması yapılamadı.');}
+}
+async function createResearchTest(){if(!current.research?.summary){toast('Önce araştırma yapın.');return}closeResearch();el('focusInput').value=current.research.topic;el('studentCount').value=current.students;el('studentCountValue').textContent=String(current.students);el('difficulty').value='adaptive';openSetup(current.course);showScreen('loadingScreen');setLoading('Araştırma testine hazırlanıyor','Webde bulunan bilgiler doğrultusunda özgün sorular ve dört gerçek seçenek oluşturuluyor.',12);
+ const count=current.students,course=current.course,c=APP.courses[course];const targets=current.presentNumbers.map((n,i)=>({testNumber:i+1,studentId:profileForNumber(n).id,studentName:profileForNumber(n).name,targetDifficulty:targetDifficultyForStudent(n,course)}));const user=`Web araştırması yapılmış bir konuya dayalı 7. sınıf ${c.name} testi oluştur. Konu: ${current.research.topic}. Araştırmadan çıkan bilgiler: ${current.research.summary.slice(0,18000)}. Kaynaklardan yararlan ama metinleri aynen kopyalama. Tam ${count} öğrencilik test üret. Test numarası sırasındaki öğrenci hedefleri: ${JSON.stringify(targets)}. Her öğrenci numarası yalnız bir kez kullanılsın. Her soru birbirinden farklı olsun. Her sorunun A B C D seçenekleri konuya özel ve anlamlı olsun. Seçenekler boş, genel veya birbirinin kopyası olmasın. Tek doğru seçenek olsun. Yanlış seçenekler öğrencinin düşünebileceği gerçek çeldiriciler olsun. Sadece JSON üret.`;try{const data=await requestWithFallback({messages:[{role:'system',content:makeSystemPrompt(course)+' Web araştırması içeren testlerde kaynağa dayalı doğruluğu önceliklendir.'},{role:'user',content:user}],responseFormat:{type:'json_schema',json_schema:{name:'research_class_test',strict:true,schema:answerSchema(count)}},maxTokens:Math.min(24000,7000+count*420),reasoningEffort:'low',timeout:70000});const qs=normalizeQuestions(safeParseJSON(getContent(data)),count);if(qs.length!==count)throw new Error('Araştırmadan yeterli sayıda farklı soru üretilemedi.');current.questions=qs;current.questions.forEach((q,i)=>q.studentNumber=current.presentNumbers[i]);current.answers=new Array(count).fill(null);current.index=0;current.testId='R'+Date.now();current.usedFallback=false;playUiTone('ready');setTimeout(showQuestion,350)}catch(e){toast(e.message||'Araştırma testine dönüştürülemedi.');showScreen('setupScreen')}
+}
+
+async function fullscreen(){try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch{toast('Tam ekran bu tarayıcı tarafından başlatılamadı. Tarayıcı menüsünden tam ekranı açabilirsiniz.')}}
+function setupEvents(){
+ renderLessons();
+ ensureProfiles();
+ renderRoster();
+ el('historyHomeBtn').onclick=renderHistory;
+ el('studentCount').addEventListener('input',()=>{const target=Number(el('studentCount').value);const boxes=[...document.querySelectorAll('[data-student-present]')];boxes.forEach((c,i)=>{c.checked=i<target;c.closest('.roster-item').classList.toggle('absent',!c.checked)});syncAttendance()});
+ el('researchStudents').addEventListener('input',()=>el('researchStudentsValue').textContent=el('researchStudents').value);
+ document.addEventListener('click',()=>{try{const c=getAudio();if(c&&c.state==='suspended')c.resume()}catch{}},{once:false});
+ el('backHomeBtn').onclick=()=>showScreen('homeScreen');
+ el('generateTestBtn').onclick=generateQuestions;
+ el('nextQuestionBtn').onclick=nextQuestion;
+ el('homeAfterResultBtn').onclick=()=>showScreen('homeScreen');
+ el('resultFullscreenBtn').onclick=fullscreen;
+ el('setupFullscreenBtn').onclick=fullscreen;
+ el('fullscreenBtn').onclick=fullscreen;
+ el('fullscreenQuizBtn').onclick=fullscreen;
+ el('historyBtn').onclick=renderHistory;
+ el('backHomeHistoryBtn').onclick=()=>showScreen('homeScreen');
+ el('clearHistoryBtn').onclick=()=>{if(confirm('Bu cihazdaki tüm test geçmişi silinsin mi?')){state.history=[];saveState();renderHistory()}};
+ el('apiSettingsBtn').onclick=openApi;
+ el('closeApiBtn').onclick=closeApi;
+ el('saveApiBtn').onclick=()=>{state.primary=el('primaryApi').value.trim();state.backup=el('backupApi').value.trim();state.model=el('modelSelect').value;state.backupModel=el('backupModelSelect').value;state.demo=false;saveState();toast('API ayarları kaydedildi.');closeApi();playUiTone('ready')};
+ el('testPrimaryBtn').onclick=()=>testKey(el('primaryApi').value.trim(),el('modelSelect').value,'primaryStatus');
+ el('testBackupBtn').onclick=()=>testKey(el('backupApi').value.trim(),el('backupModelSelect').value,'backupStatus');
+ document.querySelectorAll('[data-copy-target]').forEach(b=>b.onclick=async()=>{const v=el(b.dataset.copyTarget).value;if(!v){toast('Kopyalanacak anahtar yok.');return}try{await navigator.clipboard.writeText(v);toast('API anahtarı kopyalandı.');playUiTone('click')}catch{toast('Kopyalama engellendi. Metni seçip kopyalayabilirsiniz.')}});
+ el('demoBtn').onclick=()=>{state.demo=true;saveState();closeApi();toast('Yerel demo modu açıldı. API kullanmadan acil durum soru akışı kullanılabilir.')};
+ el('nextTestBtn').onclick=()=>{el('difficulty').value='adaptive';el('focusInput').value=current.analysis?.nextTest?.focus||'';openSetup(current.course);generateQuestions()};
+ el('webResearchBtn').onclick=openResearch;
+ el('closeResearchBtn').onclick=closeResearch;
+ el('cancelResearchBtn').onclick=closeResearch;
+ el('startResearchBtn').onclick=startWebResearch;
+ el('researchCreateTestBtn').onclick=createResearchTest;
+ el('researchNewBtn').onclick=openResearch;
+ el('copyAllApiBtn').onclick=async()=>{const text='Ana API\n'+el('seedPrimary').value+'\n\nYedek API\n'+el('seedBackup').value;try{await navigator.clipboard.writeText(text);toast('Ana ve yedek API anahtarları kopyalandı.');playUiTone('click')}catch{toast('Toplu kopyalama engellendi. Tek tek kopyalayabilirsiniz.')}};
+ document.querySelectorAll('[data-seed-copy]').forEach(b=>b.onclick=async()=>{const v=el(b.dataset.seedCopy).value;try{await navigator.clipboard.writeText(v);toast('API anahtarı kopyalandı.');playUiTone('click')}catch{toast('Kopyalama engellendi. Metni elle seçebilirsiniz.')}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApi();closeResearch()} if(e.key==='Enter'&&el('researchModal').classList.contains('open')&&!el('researchForm').classList.contains('research-hidden')&&document.activeElement===el('researchTopic'))startWebResearch()});
+}
+/* Yerel demo için hızlı kullanım: API yoksa uygulama tamamen çökmek yerine soru havuzunu kullanır. */
+
+setupEvents();
+
+</script>
+</body>
+</html>
